@@ -2,6 +2,9 @@
 // decompress DOS executables compressed with PKLITE.
 // Based on the depklite module from refkeen, which
 // in turn derived it from OpenTESArena's ExeUnpacker.
+//
+// @dozayon has documented the format here:
+// https://github.com/afritz1/OpenTESArena/blob/master/docs/pklite_specification.md
 // 
 
 #define _GNU_SOURCE							/* for asprintf(), raw strings */
