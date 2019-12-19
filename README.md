@@ -1,7 +1,9 @@
 # depklite
-Command line tool to extract data from DOS executables compressed with PKlite. Can be handy to search for strings or to disassemble and examine the code.
+Command line tool to extract data from PKLITE compressed DOS executables. Data is written to another file. This is useful for searching for strings or to disassemble and examine the code.
 
-This uses the decompression routines from [refkleen](https://github.com/NY00123/refkeen) and [OpenTESArena](https://github.com/afritz1/OpenTESArena) to extract the data from a PKlite compressed .EXE file and write it to another file. It is under the same MIT license used by refkleen's implementation.
+The decompression routines are based on  @NY00123's [refkleen](https://github.com/NY00123/refkeen) which in turn were ported from @afrtiz1's [OpenTESArena](https://github.com/afritz1/OpenTESArena). @Afritz1 gives credit to @dozayon's [excellent documentation](https://github.com/afritz1/OpenTESArena/blob/master/docs/pklite_specification.md) of the PKLITE V1.12 compression format.
+
+This program is released under the same MIT license used by refkleen's depklite implementation.
 
 ## Usage
 
