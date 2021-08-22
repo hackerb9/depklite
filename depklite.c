@@ -311,6 +311,11 @@ int32_t depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize, int c
 	// Break once a compressed byte equals 0xFF in duplication mode.
 	while (true)
 	{
+		if (vflag)
+		{
+			printBitData(getNextBitData.getNextByteDat.byteIndex, getNextBitData);
+		}
+
 		// Decide which mode to use for the current bit.
 		if (getNextBit(&getNextBitData))
 		{
@@ -335,6 +340,7 @@ int32_t depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize, int c
 				else if (encryptedByte == 0xFF)
 				{
 					// All done with decompression.
+					verbose("Correctly received end of decompression marker.\n");
 					break;
 				}
 				else
@@ -401,7 +407,7 @@ int32_t depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize, int c
 		}
 		// Avoid buffer overrun
 		if (decompPtr-decompBuff >= buffsize) { 
-			fprintf(stderr, "depklite - ERROR. Buffer of %'d bytes was too small.\n", buffsize);
+			fprintf(stderr, "depklite - Programming error. Buffer of %'d bytes was too small.\n", buffsize);
 			break;
 		}
 	}
@@ -409,6 +415,50 @@ int32_t depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize, int c
 	free(compressedStart);
 	return decompPtr-decompBuff;
 }
+
+char *itob(uint16_t i)
+{
+	static char binary[17];
+	for (int t=15; t>=0; t--)
+		{
+			binary[t]=(i&1)+'0';
+			i=i>>1;
+		}
+	binary[16]='\0';
+	return binary;
+}
+
+int printBitData(int byteIndex, GetNextBit_Data data)
+{
+
+	//	const bool bit = (data.bitArray & (1 << data.bitsRead)) != 0;
+	fprintf(stderr, "%8d\t%s\r", byteIndex, itob(data.bitArray));
+
+	/* fprintf(stderr, "\t\t"); */
+	/* for (int t=15; t > data.bitsRead; t--) */
+	/* { */
+	/* 	fprintf(stderr, " "); */
+	/* } */
+	/* fprintf(stderr, "^\n"); */
+
+	return 0;
+}
+
+
+
+long estimateLength(FILE *fp) {
+	// Use dozayon's algorithm to slightly overestimate size of decompressed data.
+	// https://github.com/afritz1/OpenTESArena/blob/master/docs/pklite_specification.md
+	fseek(fp, 0x61, SEEK_SET);
+	short int  value;
+	fread(&value, 2, 1, fp);
+	verbose("value is %d\n" ,value);
+	long length = value*0x10 - 0x450;
+	rewind(fp);
+	return length;
+}
+
+
 
 void usage() {
 	printf(R"(depklite - extract data from DOS executables compressed with PKlite.
@@ -431,8 +481,8 @@ int main(int argc, char **argv) {
 	char *inputFilename=NULL;
 
 	// "640K ought to be enough for anyone." --Bill Gates
-	int buffsize=4*1<<20;							/* 1<<20 == 1 MiB */
-	unsigned char buffer[buffsize];
+	int buffsize=4*1<<20; 
+	unsigned char buffer[buffsize];						/* storage for uncompressed data */
 
 	// Options
 	bool useDecryption=false;			/* Not needed for Keen Dreams nor 3C5X9CFG */
@@ -493,9 +543,13 @@ int main(int argc, char **argv) {
 	{
 		// Mandatory filename
 		asprintf(&inputFilename, argv[optind++]);
+
 		// Optional offset
 		if (optind < argc)
-			compressedDataOffset = atoi(argv[optind++]);
+		{
+			// Offset can be in decimal or hex (if it begins with 0x).
+			sscanf(argv[optind++], "%i", &compressedDataOffset); 
+		}
 	}
 
 	FILE *fp=fopen(inputFilename, "r");
@@ -503,6 +557,12 @@ int main(int argc, char **argv) {
 		perror(inputFilename);
 		exit(1);
 	}
+
+	buffsize=estimateLength(fp);
+	buffsize=4*1<<20;
+	verbose("Estimated size is %'d bytes\n", buffsize);
+	//buffer=(uint8_t *)(malloc(buffsize));
+	Debug_check(buffer, "depklite - Failed to allocate decompression buffer!\n");
 
 	buffsize=depklite_unpack(fp, buffer, buffsize, compressedDataOffset, useDecryption);
 
