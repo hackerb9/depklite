@@ -10,4 +10,6 @@
 
 int32_t  depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize, int compressedDataOffset, bool useDecryption);
 
+int printBitData(int byteIndex, GetNextBit_Data data);
+
 #endif
