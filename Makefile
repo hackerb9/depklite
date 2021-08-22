@@ -1,4 +1,4 @@
-CFLAGS += -Wall
+CFLAGS += -Wall -g
 
 depklite:	depklite.c depklite.h
 
