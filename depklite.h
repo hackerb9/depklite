@@ -5,6 +5,19 @@
 #include <stdio.h>
 #include <stdint.h>
 
+typedef struct
+{
+	const uint8_t *compressedStart;
+	int byteIndex;
+} GetNextByte_Data;
+
+typedef struct
+{
+	uint16_t bitArray;
+	int bitsRead;
+	GetNextByte_Data getNextByteDat;
+} GetNextBit_Data;
+
 // depklite, a derivative of OpenTESArena's ExeUnpacker.
 // Used for decompressing DOS executables compressed with PKLITE.
 
