@@ -549,7 +549,7 @@ int main(int argc, char **argv) {
 	buffsize=4*1<<20;
 	verbose("Estimated size is %'d bytes\n", buffsize);
 	//buffer=(uint8_t *)(malloc(buffsize));
-	Debug_check(buffer, "depklite - Failed to allocate decompression buffer!\n");
+	//Debug_check(buffer, "depklite - Failed to allocate decompression buffer!\n");
 
 	buffsize=depklite_unpack(fp, buffer, buffsize, compressedDataOffset, useDecryption);
 
