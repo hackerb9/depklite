@@ -5,12 +5,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
+// Data structure for getNextByte() lambda.
 typedef struct
 {
 	const uint8_t *compressedStart;
 	int byteIndex;
 } GetNextByte_Data;
 
+// Data structure for getNextBit() lambda.
 typedef struct
 {
 	uint16_t bitArray;
