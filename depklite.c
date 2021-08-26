@@ -47,25 +47,12 @@ static void Debug_check(bool expression, const char *msg)
 /*** C++11 lambda emulation ***/
 
 // Lambda for getting the next byte from compressed data.
-typedef struct
-{
-	const uint8_t *compressedStart;
-	int byteIndex;
-} GetNextByte_Data;
-
 static uint8_t getNextByte(GetNextByte_Data *data)
 {
 	return data->compressedStart[data->byteIndex++];
 }
 
 // Lambda for getting the next bit in the theoretical bit stream.
-typedef struct
-{
-	uint16_t bitArray;
-	int bitsRead;
-	GetNextByte_Data getNextByteDat;
-} GetNextBit_Data;
-
 static bool getNextBit(GetNextBit_Data *data)
 {
 	const bool bit = (data->bitArray & (1 << data->bitsRead)) != 0;
